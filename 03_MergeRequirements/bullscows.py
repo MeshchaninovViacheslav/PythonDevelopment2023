@@ -1,7 +1,7 @@
 import argparse
 import os
 import random
-import urllib
+from urllib.request import urlopen
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -61,7 +61,7 @@ def read_dict(path):
         with open(path, "r") as f:
             dictionary = [x.strip() for x in f.readlines()]
     else:
-        with urllib.request.urlopen(path) as f:
+        with urlopen(path) as f:
             dictionary = [x.decode("utf-8").strip() for x in f.readlines()]
     return dictionary
 
