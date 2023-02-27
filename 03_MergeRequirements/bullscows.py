@@ -1,8 +1,9 @@
 import argparse
 import os
+import io
 import random
 from urllib.request import urlopen
-from cowsay import cowsay, list_cows
+from cowsay import cowsay, list_cows, read_dot_cow
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -37,11 +38,24 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 
 def ask(prompt: str, valid: list[str] = None) -> str:
+    COW = read_dot_cow(io.StringIO("""
+    $the_cow = <<EOC;
+       $thoughts
+        $thoughts
+         $thoughts
+                    '-.
+          .---._     \\ \.--'
+        /       `-..__)  ,-'
+       |    0           /
+        \--.__,   .__.,`
+         `-.___'._\\_.'
+    
+    EOC"""))
     while True:
-        print(cowsay(prompt, random.choice(list_cows())))
+        print(cowsay(prompt, cowfile=COW))
         guess = input()
         if valid and guess not in valid:
-            print(cowsay("Слова нет в словаре.", random.choice(list_cows())))
+            print(cowsay("Слова нет в словаре.", cowfile=COW))
         else:
             break
     return guess
