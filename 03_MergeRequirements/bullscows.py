@@ -2,6 +2,7 @@ import argparse
 import os
 import random
 from urllib.request import urlopen
+from cowsay import cowsay, list_cows
 
 
 def bullscows(guess: str, secret: str) -> (int, int):
@@ -37,16 +38,17 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
 def ask(prompt: str, valid: list[str] = None) -> str:
     while True:
-        guess = input(prompt)
+        print(cowsay(prompt, random.choice(list_cows())))
+        guess = input()
         if valid and guess not in valid:
-            print("Слова нет в словаре.")
+            print(cowsay("Слова нет в словаре.", random.choice(list_cows())))
         else:
             break
     return guess
 
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(format_string.format(bulls, cows))
+    print(cowsay(format_string.format(bulls, cows), random.choice(list_cows())))
 
 
 def parse_options():
