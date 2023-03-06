@@ -3,6 +3,22 @@ import shlex
 import cowsay
 
 
+def cowsay_parse(arg):
+    cow = 'default'
+    eyes = cowsay.Option.eyes
+    tongue = cowsay.Option.tongue
+
+    args = shlex.split(arg)
+    message = args.pop(0)
+    if args:
+        cow = args.pop(0)
+    if args:
+        eyes = int(args.pop(0))
+    if args:
+        tongue = bool(args.pop(0))
+    return message, cow, eyes, tongue
+
+
 class CowSay(cmd.Cmd):
     intro = "Moo!"
 
@@ -37,9 +53,13 @@ class CowSay(cmd.Cmd):
 
         print(cowsay.make_bubble(text, brackets, width, wrap_text))
 
-    # def do_cowthimaknk(self, arg):
-    #     """Returns the resulting cowthink string"""
-    #     print(cowthink(shlex.split(arg)[0]))
+    def do_cowsay(self, arg):
+        message, cow, eyes, tongue = cowsay_parse(arg)
+        print(cowsay.cowsay(message=message, cow=cow, eyes=eyes, tongue=tongue))
+
+    def do_cowthink(self, arg):
+        message, cow, eyes, tongue = cowsay_parse(arg)
+        print(cowsay.cowthink(message=message, cow=cow, eyes=eyes, tongue=tongue))
 
 
 if __name__ == "__main__":
