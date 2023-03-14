@@ -5,6 +5,11 @@ from cowsay import cowsay, list_cows
 clients = {}
 
 
+async def awriter(writer, message):
+    writer.write(message.encode())
+    await writer.drain()
+
+
 async def cow_chat(reader, writer):
     # Tasks initialization
     me = "{}:{}".format(*writer.get_extra_info('peername'))
@@ -27,17 +32,29 @@ async def cow_chat(reader, writer):
                     if len(command) < 2:
                         break
                     if command[1] not in list_cows():
-                        writer.write(f"This is not a cow name\n".encode())
-                        await writer.drain()
+                        await awriter(writer, f"This is not a cow name\n")
                     elif command[1] in clients:
-                        writer.write(f"This name is taken\n".encode())
-                        await writer.drain()
+                        await awriter(writer, f"This name is taken\n")
                     else:
                         clients[command[1]] = clients.pop(me)
                         me = command[1]
-                        writer.write(f"Successful login\n".encode())
-                        await writer.drain()
-
+                        await awriter(writer, f"Successful login\n")
+                if command[0] == "who":
+                    await awriter(writer, f"Online users: {[cow for cow in clients if cow in list_cows()]}\n")
+                if command[0] == "cows":
+                    await awriter(writer, f"Available cows: {[cow for cow in list_cows() if cow not in clients]}\n")
+                if command[0] == "quit":
+                    break
+                if command[0] == "say":
+                    if me in list_cows():
+                        pass
+                    else:
+                        await awriter(writer, f"First login\n")
+                if command[0] == "yield":
+                    if me in list_cows():
+                        pass
+                    else:
+                        await awriter(writer, f"First login\n")
             elif q is receive:
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
