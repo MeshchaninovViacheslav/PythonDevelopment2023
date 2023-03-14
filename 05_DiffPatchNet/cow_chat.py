@@ -13,7 +13,6 @@ async def awriter(writer, message):
 async def cow_chat(reader, writer):
     # Tasks initialization
     me = "{}:{}".format(*writer.get_extra_info('peername'))
-    print(me)
     clients[me] = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
@@ -70,18 +69,15 @@ async def cow_chat(reader, writer):
     # Tasks close
     send.cancel()
     receive.cancel()
-    print(me, "DONE")
     del clients[me]
     writer.close()
     await writer.wait_closed()
 
 
 async def main():
-    # The client_connected_cb callback is called whenever a new client connection is established.
-    # It receives a (reader, writer) pair as two arguments, instances of the StreamReader and StreamWriter classes.
     server = await asyncio.start_server(client_connected_cb=cow_chat, host='0.0.0.0', port=1337)
     async with server:
-        await server.serve_forever()  # Start accepting connections until the coroutine is cancelled.
+        await server.serve_forever()
 
 
 asyncio.run(main())
