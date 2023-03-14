@@ -11,7 +11,6 @@ async def awriter(writer, message):
 
 
 async def cow_chat(reader, writer):
-    # Tasks initialization
     me = "{}:{}".format(*writer.get_extra_info('peername'))
     clients[me] = asyncio.Queue()
     send = asyncio.create_task(reader.readline())
@@ -21,10 +20,8 @@ async def cow_chat(reader, writer):
         done, pending = await asyncio.wait([send, receive], return_when=asyncio.FIRST_COMPLETED)
         for q in done:
             if q is send:
-                send = asyncio.create_task(reader.readline())  # update send task
-                command = shlex.split(q.result().decode().strip())  # get command line
-
-                # analyse cases
+                send = asyncio.create_task(reader.readline())
+                command = shlex.split(q.result().decode().strip())
                 if not command:
                     continue
                 if command[0] == "login":
@@ -65,8 +62,6 @@ async def cow_chat(reader, writer):
                 receive = asyncio.create_task(clients[me].get())
                 writer.write(f"{q.result()}\n".encode())
                 await writer.drain()
-
-    # Tasks close
     send.cancel()
     receive.cancel()
     del clients[me]
