@@ -47,12 +47,19 @@ async def cow_chat(reader, writer):
                     break
                 if command[0] == "say":
                     if me in list_cows():
-                        pass
+                        if len(command) < 3:
+                            break
+                        if command[1] in clients and command[1] in list_cows():
+                            await clients[command[1]].put(cowsay(command[2], cow=me))
                     else:
                         await awriter(writer, f"First login\n")
                 if command[0] == "yield":
                     if me in list_cows():
-                        pass
+                        if len(command) < 2:
+                            break
+                        for name in clients:
+                            if name in list_cows() and name != me:
+                                await clients[name].put(cowsay(command[1], cow=me))
                     else:
                         await awriter(writer, f"First login\n")
             elif q is receive:
