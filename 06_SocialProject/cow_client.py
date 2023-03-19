@@ -22,8 +22,31 @@ class CowClient(cmd.Cmd):
             msg = receive(timeout=None)
             for c in ["'", "[", "]", ","]:
                 msg = msg.replace(c, "")
-            cows = shlex.split(msg)[2:]
+            cows = msg.strip().split()[2:]
             return [s for s in cows if s.startswith(text)]
+
+    def do_cows(self, args):
+        send("cows\n")
+
+    def do_exit(self, args):
+        send("exit\n")
+        return 1
+
+    def do_yield(self, args):
+        send(f"yield {args.strip()}\n")
+
+    def do_say(self, args):
+        send(f"say {args.strip()}\n")
+
+    def complete_say(self, text, line, beg, end):
+        with locker:
+            if len(text.split()) <= 1:
+                send("who\n")
+                msg = receive(timeout=None)
+                for c in ["'", "[", "]", ","]:
+                    msg = msg.replace(c, "")
+                who = msg.strip().split()[2:]
+                return [s for s in who if s.startswith(text)]
 
 
 def send(msg):
